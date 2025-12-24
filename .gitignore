@@ -31,4 +31,8 @@ go.work.sum
 # .idea/
 # .vscode/
 
+# Executaveis
 pokedex_bootdev
+
+# Arquivo de log
+*.log
