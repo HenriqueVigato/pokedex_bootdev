@@ -31,6 +31,6 @@ func main() {
 
 		firstMessage := cleanedMessage[0]
 
-		fmt.Println("Your command was: ", firstMessage)
+		fmt.Println("Your command was:", firstMessage)
 	}
 }
