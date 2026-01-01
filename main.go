@@ -12,7 +12,13 @@ type cliCommand struct {
 	callback    func() error
 }
 
+// Uma struct no escopo global para que possa acessar o map[string] fora da main
+type cmd struct {
+	options map[string]cliCommand
+}
+
 func main() {
+	opt := &cmd{}
 	scanner := bufio.NewScanner(os.Stdin)
 
 	commands := map[string]cliCommand{
@@ -21,10 +27,22 @@ func main() {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"help": {
+			name: "help",
+			description: "Displays a help message",
+			callback: func () error {
+				return commandHelp(opt)
+			},
+		},
 	}
+	opt.options = commands
+
+	fmt.Println("Welcome to the Pokedex!")
+	fmt.Println("")
+	fmt.Println("help to see the commands")
 
 	for {
-		fmt.Print("Pokedex > ")
+		fmt.Print("> ")
 
 		success := scanner.Scan()
 		if !success {
@@ -60,5 +78,13 @@ func main() {
 func commandExit() error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
+	return nil
+}
+
+func commandHelp(command *cmd) error {
+		fmt.Println("Comandos disponiveis: \n")
+	for _, v := range command.options {
+		fmt.Printf("%s: %s\n", v.name, v.description)
+	}
 	return nil
 }
