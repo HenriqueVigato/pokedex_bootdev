@@ -1,0 +1,103 @@
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*Config) error
+}
+
+type Config struct {
+	Next     string
+	Previous string
+}
+
+func getCommands() map[string]cliCommand {
+	commands := map[string]cliCommand{
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Displays the names of locations areas in the Pokemon world",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays the Previous page of map",
+			callback:    commandMapb,
+		},
+	}
+	return commands
+}
+
+func commandExit(*Config) error {
+	fmt.Println("Closing the Pokedex... Goodbye!")
+	os.Exit(0)
+	return nil
+}
+
+func commandHelp(c *Config) error {
+	command := getCommands()
+	fmt.Printf("Comandos disponiveis: \n\n")
+	for _, v := range command {
+		fmt.Printf("%s: %s\n", v.name, v.description)
+	}
+	return nil
+}
+
+func commandMap(c *Config) error {
+	locations, err := getDataJSON(c.Next)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	c.Next = locations["next"].(string)
+	if locations["previous"] == nil {
+		c.Previous = ""
+	} else {
+		c.Previous = locations["previous"].(string)
+	}
+
+	for _, v := range locations["results"].([]any) {
+		fmt.Println(v.(map[string]any)["name"])
+	}
+
+	return nil
+}
+
+func commandMapb(c *Config) error {
+	if c.Previous == "" {
+		fmt.Println("There are not previous page")
+		return nil
+	}
+
+	locations, err := getDataJSON(c.Previous)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	c.Next = locations["next"].(string)
+	if locations["previous"] == nil {
+		c.Previous = ""
+	} else {
+		c.Previous = locations["previous"].(string)
+	}
+
+	for _, v := range locations["results"].([]any) {
+		fmt.Println(v.(map[string]any)["name"])
+	}
+
+	return nil
+}
