@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGetCommands(t *testing.T) {
 	commands := getCommands()
