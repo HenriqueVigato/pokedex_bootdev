@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	pokecache "github.com/HenriqueVigato/pokedex_bootdev/internal"
 )
 
 type cliCommand struct {
@@ -14,6 +16,7 @@ type cliCommand struct {
 type Config struct {
 	Next     string
 	Previous string
+	cache    *pokecache.Cache
 }
 
 func getCommands() map[string]cliCommand {
@@ -63,16 +66,8 @@ func commandMap(c *Config) error {
 		return fmt.Errorf("%v", err)
 	}
 
-	c.Next = locations["next"].(string)
-	if locations["previous"] == nil {
-		c.Previous = ""
-	} else {
-		c.Previous = locations["previous"].(string)
-	}
-
-	for _, v := range locations["results"].([]any) {
-		fmt.Println(v.(map[string]any)["name"])
-	}
+	updateNextPrevius(c, locations)
+	printMap(locations["results"].([]any))
 
 	return nil
 }
@@ -88,16 +83,23 @@ func commandMapb(c *Config) error {
 		return fmt.Errorf("%v", err)
 	}
 
+	updateNextPrevius(c, locations)
+	printMap(locations["results"].([]any))
+
+	return nil
+}
+
+func printMap(locations []any) {
+	for _, v := range locations {
+		fmt.Println(v.(map[string]any)["name"])
+	}
+}
+
+func updateNextPrevius(c *Config, locations map[string]any) {
 	c.Next = locations["next"].(string)
 	if locations["previous"] == nil {
 		c.Previous = ""
 	} else {
 		c.Previous = locations["previous"].(string)
 	}
-
-	for _, v := range locations["results"].([]any) {
-		fmt.Println(v.(map[string]any)["name"])
-	}
-
-	return nil
 }
