@@ -4,14 +4,19 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
+
+	pokecache "github.com/HenriqueVigato/pokedex_bootdev/internal"
 )
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	commands := getCommands()
+	cache := pokecache.NewCache(10 * time.Millisecond)
 	configs := &Config{
 		Next:     "https://pokeapi.co/api/v2/location-area/",
 		Previous: "",
+		cache:    cache,
 	}
 
 	fmt.Println("Welcome to the Pokedex!")
