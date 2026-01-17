@@ -61,7 +61,7 @@ func commandHelp(c *Config) error {
 }
 
 func commandMap(c *Config) error {
-	locations, err := getDataJSON(c.Next)
+	locations, err := convertToJSON(getData(c.Next))
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}
@@ -78,7 +78,7 @@ func commandMapb(c *Config) error {
 		return nil
 	}
 
-	locations, err := getDataJSON(c.Previous)
+	locations, err := convertToJSON(getData(c.Previous))
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}

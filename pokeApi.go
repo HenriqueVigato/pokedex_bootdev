@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func getDataJSON(url string) (map[string]any, error) {
+func getData(url string) ([]byte, error) {
 	res, err := http.Get(url)
 	if res.StatusCode > 299 {
 		return nil, fmt.Errorf("response failed with a StatusCode: %v", res.StatusCode)
@@ -22,8 +22,15 @@ func getDataJSON(url string) (map[string]any, error) {
 		return nil, fmt.Errorf("error readind the body response %v", err)
 	}
 
+	return body, nil
+}
+
+func convertToJSON(data []byte, err error) (map[string]any, error) {
+	if err != nil {
+		return nil, fmt.Errorf("error with the body response %v", err)
+	}
 	var dataJSON map[string]any
-	if err := json.Unmarshal(body, &dataJSON); err != nil {
+	if err := json.Unmarshal(data, &dataJSON); err != nil {
 		return nil, fmt.Errorf("error during Unmarshal the response body %v", err)
 	}
 
