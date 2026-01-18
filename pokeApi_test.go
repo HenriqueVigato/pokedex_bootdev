@@ -5,7 +5,7 @@ import (
 )
 
 func TestApi(t *testing.T) {
-	response, err := getDataJSON("https://pokeapi.co/api/v2/location/1")
+	response, err := convertToJSON(getData("https://pokeapi.co/api/v2/location/1"))
 	if err != nil {
 		t.Errorf("Nao era eperado nenhum tipo de erro %v", err)
 	}

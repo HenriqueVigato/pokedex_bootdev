@@ -25,14 +25,12 @@ func getData(url string) ([]byte, error) {
 	return body, nil
 }
 
-func convertToJSON(data []byte, err error) (map[string]any, error) {
-	if err != nil {
-		return nil, fmt.Errorf("error with the body response %v", err)
-	}
+func convertToJSON(data []byte) map[string]any {
 	var dataJSON map[string]any
 	if err := json.Unmarshal(data, &dataJSON); err != nil {
-		return nil, fmt.Errorf("error during Unmarshal the response body %v", err)
+		fmt.Errorf("error during Unmarshal the response body %v", err)
+		return nil
 	}
 
-	return dataJSON, nil
+	return dataJSON
 }
