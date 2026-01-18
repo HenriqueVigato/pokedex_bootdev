@@ -61,14 +61,22 @@ func commandHelp(c *Config) error {
 }
 
 func commandMap(c *Config) error {
-	locations, err := convertToJSON(getData(c.Next))
-	if err != nil {
-		return fmt.Errorf("%v", err)
+	result, ok := c.cache.Get(c.Next)
+	if !ok {
+		locations, err := getData(c.Next)
+		if err != nil {
+			return fmt.Errorf("%v", err)
+		}
+		c.cache.Add(c.Next, locations)
+		updateNextPrevius(c, convertToJSON(locations))
+		printMap(convertToJSON(locations)["results"].([]any))
+
+	} else {
+		jsonResult := convertToJSON(result)
+
+		updateNextPrevius(c, jsonResult)
+		printMap(jsonResult["results"].([]any))
 	}
-
-	updateNextPrevius(c, locations)
-	printMap(locations["results"].([]any))
-
 	return nil
 }
 
@@ -77,15 +85,22 @@ func commandMapb(c *Config) error {
 		fmt.Println("There are not previous page")
 		return nil
 	}
+	result, ok := c.cache.Get(c.Previous)
+	if !ok {
+		locations, err := getData(c.Previous)
+		if err != nil {
+			return fmt.Errorf("%v", err)
+		}
+		c.cache.Add(c.Previous, locations)
+		updateNextPrevius(c, convertToJSON(locations))
+		printMap(convertToJSON(locations)["results"].([]any))
 
-	locations, err := convertToJSON(getData(c.Previous))
-	if err != nil {
-		return fmt.Errorf("%v", err)
+	} else {
+		jsonResult := convertToJSON(result)
+
+		updateNextPrevius(c, jsonResult)
+		printMap(jsonResult["results"].([]any))
 	}
-
-	updateNextPrevius(c, locations)
-	printMap(locations["results"].([]any))
-
 	return nil
 }
 
