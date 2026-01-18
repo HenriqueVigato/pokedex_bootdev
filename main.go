@@ -12,7 +12,7 @@ import (
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	commands := getCommands()
-	cache := pokecache.NewCache(10 * time.Millisecond)
+	cache := pokecache.NewCache(25000 * time.Millisecond)
 	configs := &Config{
 		Next:     "https://pokeapi.co/api/v2/location-area/",
 		Previous: "",
