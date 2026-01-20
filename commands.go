@@ -17,6 +17,7 @@ type Config struct {
 	Next     string
 	Previous string
 	cache    *pokecache.Cache
+	area     string
 }
 
 func getCommands() map[string]cliCommand {
@@ -40,6 +41,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays the Previous page of map",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore",
+			description: "List of all the Pokemon located",
+			callback:    commandExplore,
 		},
 	}
 	return commands
@@ -116,5 +122,28 @@ func updateNextPrevius(c *Config, locations map[string]any) {
 		c.Previous = ""
 	} else {
 		c.Previous = locations["previous"].(string)
+	}
+}
+
+func commandExplore(c *Config) error {
+	result, ok := c.cache.Get(c.area)
+	if !ok {
+		locations, err := getData(c.area)
+		if err != nil {
+			return fmt.Errorf("%v", err)
+		}
+		c.cache.Add(c.area, locations)
+		printPokemons(convertToJSON(locations)["pokemon_encounters"].([]any))
+	} else {
+		jsonResult := convertToJSON(result)
+		printPokemons(jsonResult["pokemon_encounters"].([]any))
+	}
+
+	return nil
+}
+
+func PrintPokemons(locations []any) {
+	for _, v := range locations {
+		fmt.Println(v.(map[string]any[]))
 	}
 }
