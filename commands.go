@@ -10,14 +10,14 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*Config) error
+	callback    func(*Config, string) error
 }
 
 type Config struct {
 	Next     string
 	Previous string
 	cache    *pokecache.Cache
-	area     string
+	url      string
 }
 
 func getCommands() map[string]cliCommand {
@@ -51,13 +51,13 @@ func getCommands() map[string]cliCommand {
 	return commands
 }
 
-func commandExit(*Config) error {
+func commandExit(i *Config, n string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(c *Config) error {
+func commandHelp(c *Config, n string) error {
 	command := getCommands()
 	fmt.Printf("Comandos disponiveis: \n\n")
 	for _, v := range command {
@@ -66,7 +66,7 @@ func commandHelp(c *Config) error {
 	return nil
 }
 
-func commandMap(c *Config) error {
+func commandMap(c *Config, n string) error {
 	result, ok := c.cache.Get(c.Next)
 	if !ok {
 		locations, err := getData(c.Next)
@@ -86,7 +86,7 @@ func commandMap(c *Config) error {
 	return nil
 }
 
-func commandMapb(c *Config) error {
+func commandMapb(c *Config, n string) error {
 	if c.Previous == "" {
 		fmt.Println("There are not previous page")
 		return nil
@@ -125,14 +125,14 @@ func updateNextPrevius(c *Config, locations map[string]any) {
 	}
 }
 
-func commandExplore(c *Config) error {
-	result, ok := c.cache.Get(c.area)
+func commandExplore(c *Config, area string) error {
+	result, ok := c.cache.Get(area)
 	if !ok {
-		locations, err := getData(c.area)
+		locations, err := getData(area)
 		if err != nil {
 			return fmt.Errorf("%v", err)
 		}
-		c.cache.Add(c.area, locations)
+		c.cache.Add(area, locations)
 		printPokemons(convertToJSON(locations)["pokemon_encounters"].([]any))
 	} else {
 		jsonResult := convertToJSON(result)
@@ -142,8 +142,8 @@ func commandExplore(c *Config) error {
 	return nil
 }
 
-func PrintPokemons(locations []any) {
+func printPokemons(locations []any) {
 	for _, v := range locations {
-		fmt.Println(v.(map[string]any[]))
+		fmt.Println(v.(map[string]any)["pokemon"].(map[string]any)["name"].(string))
 	}
 }
