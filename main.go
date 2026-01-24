@@ -18,6 +18,7 @@ func main() {
 		Next:     "https://pokeapi.co/api/v2/location-area/",
 		Previous: "",
 		cache:    cache,
+		pokedex:  make(map[string]any),
 	}
 
 	fmt.Println("Welcome to the Pokedex!")

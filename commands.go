@@ -17,7 +17,7 @@ type Config struct {
 	Next     string
 	Previous string
 	cache    *pokecache.Cache
-	url      string
+	pokedex  map[string]any
 }
 
 func getCommands() map[string]cliCommand {
@@ -46,6 +46,11 @@ func getCommands() map[string]cliCommand {
 			name:        "explore",
 			description: "List of all the Pokemon located",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Try capture a pokemon",
+			callback:    commandCatch,
 		},
 	}
 	return commands
@@ -146,4 +151,8 @@ func printPokemons(locations []any) {
 	for _, v := range locations {
 		fmt.Println(v.(map[string]any)["pokemon"].(map[string]any)["name"].(string))
 	}
+}
+
+func commandCatch(c *Config, name string) error {
+	return nil
 }
