@@ -31,12 +31,12 @@ func resetData() {
 	}
 }
 
-func capturaOutput(commands map[string]cliCommand, command, urlArea string) string {
+func capturaOutput(commands map[string]cliCommand, command, moreInfo string) string {
 	old := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	commands[command].callback(configs, urlArea)
+	commands[command].callback(configs, moreInfo)
 
 	w.Close()
 	os.Stdout = old
@@ -71,8 +71,8 @@ func TestMapCommands(t *testing.T) {
 func TestMapbCommands(t *testing.T) {
 	resetData()
 	commands := getCommands()
-	commands["map"].callback(configs, "")
-	commands["map"].callback(configs, "")
+	_ = capturaOutput(commands, "map", "")
+	_ = capturaOutput(commands, "map", "")
 	mapWasCalled := strings.Contains(capturaOutput(commands, "map", ""), "ravaged-path-area")
 
 	if !mapWasCalled {
@@ -94,5 +94,29 @@ func TestExploreCommands(t *testing.T) {
 
 	if !strings.Contains(output, "zubat") {
 		t.Errorf("Esperava encontrar o pokemon Zubat")
+	}
+}
+
+func TestCatchCommands(t *testing.T) {
+	resetData()
+	commands := getCommands()
+	escaped := 0
+	captured := 0
+
+	for i := 0; i < 10; i++ {
+		output := capturaOutput(commands, "catch", "pikachu")
+
+		if strings.Contains(output, "escaped") {
+			escaped++
+		}
+		if strings.Contains(output, "caught") {
+			captured++
+		}
+	}
+	if captured <= 0 {
+		t.Errorf("Deveria capturar pelo menos 1 pokemon em 10 tentativas")
+	}
+	if escaped <= 0 {
+		t.Errorf("Deveria ter pelo menos um que conseguiu escapar")
 	}
 }
