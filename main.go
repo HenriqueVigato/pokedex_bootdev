@@ -10,13 +10,13 @@ import (
 )
 
 func main() {
-	const pokemonArea = "https://pokeapi.co/api/v2/location-area/"
-	const pokemons = "https://pokeapi.co/api/v2/pokemonArea"
+	const apiPokemonArea = "https://pokeapi.co/api/v2/location-area/"
+	const apiPokemons = "https://pokeapi.co/api/v2/pokemon/"
 	scanner := bufio.NewScanner(os.Stdin)
 	commands := getCommands()
 	cache := pokecache.NewCache(25000 * time.Millisecond)
 	configs := &Config{
-		Next:     pokemonArea,
+		Next:     apiPokemonArea,
 		Previous: "",
 		cache:    cache,
 		pokedex:  make(map[string]any),
@@ -58,7 +58,16 @@ func main() {
 			if len(userCommand) < 2 {
 				fmt.Println("Favor informe uma area a ser explorada")
 			} else {
-				erro := cmd.callback(configs, pokemonArea+userCommand[1])
+				erro := cmd.callback(configs, apiPokemonArea+userCommand[1])
+				if erro != nil {
+					fmt.Println("Erro:", erro)
+				}
+			}
+		case "catch":
+			if len(userCommand) < 2 {
+				fmt.Println("Favor informe um nome de pokemon a ser capturado")
+			} else {
+				erro := cmd.callback(configs, apiPokemons+userCommand[1])
 				if erro != nil {
 					fmt.Println("Erro:", erro)
 				}
