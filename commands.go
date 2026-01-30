@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 
 	pokecache "github.com/HenriqueVigato/pokedex_bootdev/internal"
 )
@@ -153,6 +154,21 @@ func printPokemons(locations []any) {
 	}
 }
 
-func commandCatch(c *Config, name string) error {
+func commandCatch(c *Config, pokemon string) error {
+	fmt.Printf("Throwing a Pokeboll at %s ... \n", path.Base(pokemon))
+	result, ok := c.cache.Get(pokemon)
+	if !ok {
+		pokeData, err := getData(pokemon)
+		if err != nil {
+			return fmt.Errorf("%v", err)
+		}
+		c.cache.Add(pokemon, pokeData)
+	} else {
+		jsonPokeData := convertToJSON(result)
+	}
 	return nil
+}
+
+func tryCatchPokemon(baseExperience int) bool {
+	return true
 }
