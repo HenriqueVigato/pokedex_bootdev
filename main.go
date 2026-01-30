@@ -11,11 +11,12 @@ import (
 
 func main() {
 	const pokemonArea = "https://pokeapi.co/api/v2/location-area/"
+	const pokemons = "https://pokeapi.co/api/v2/pokemonArea"
 	scanner := bufio.NewScanner(os.Stdin)
 	commands := getCommands()
 	cache := pokecache.NewCache(25000 * time.Millisecond)
 	configs := &Config{
-		Next:     "https://pokeapi.co/api/v2/location-area/",
+		Next:     pokemonArea,
 		Previous: "",
 		cache:    cache,
 		pokedex:  make(map[string]any),
@@ -46,24 +47,23 @@ func main() {
 			continue
 		}
 
-		if cmd, exist := commands[userCommand[0]]; exist {
-			if len(userCommand) > 1 && userCommand[0] == "explore" {
+		cmd := commands[userCommand[0]]
+		switch cmd.name {
+		case "help", "exit", "map", "mapb":
+			err := cmd.callback(configs, "")
+			if err != nil {
+				fmt.Println("Erro:", err)
+			}
+		case "explore":
+			if len(userCommand) < 2 {
+				fmt.Println("Favor informe uma area a ser explorada")
+			} else {
 				erro := cmd.callback(configs, pokemonArea+userCommand[1])
-
 				if erro != nil {
 					fmt.Println("Erro:", erro)
 				}
-			} else {
-				if userCommand[0] == "explore" {
-					fmt.Println("Favor informe uma area.")
-				} else {
-					err := cmd.callback(configs, "")
-					if err != nil {
-						fmt.Println("Erro:", err)
-					}
-				}
 			}
-		} else {
+		default:
 			fmt.Println("Comando desconhecido. Digite 'help' para ver os comandos.")
 		}
 	}
