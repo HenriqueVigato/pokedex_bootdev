@@ -11,8 +11,6 @@ import (
 	pokecache "github.com/HenriqueVigato/pokedex_bootdev/internal"
 )
 
-const pokemonArea = "https://pokeapi.co/api/v2/location-area/"
-
 var (
 	cache   = pokecache.NewCache(25000 * time.Millisecond)
 	configs = &Config{
@@ -103,7 +101,7 @@ func TestCatchCommands(t *testing.T) {
 	escaped := 0
 	captured := 0
 
-	for i := 0; i < 10; i++ {
+	for range int(10) {
 		output := capturaOutput(commands, "catch", "pikachu")
 
 		if strings.Contains(output, "escaped") {
