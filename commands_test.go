@@ -53,9 +53,16 @@ func TestHelpCommands(t *testing.T) {
 	commands := getCommands()
 
 	output := capturaOutput(commands, "help", "")
+	expectedCommands := []string{"exit", "help", "map", "mapb", "explore", "catch", "inspect"}
 
 	if !strings.Contains(output, "Displays the names of locations") {
 		t.Errorf("Esperava encontar 'Displays the names of locations' dentre as respostas")
+	}
+
+	for _, command := range expectedCommands {
+		if !strings.Contains(output, command) {
+			t.Errorf("Esperava encontrar o comando: %s", command)
+		}
 	}
 }
 
