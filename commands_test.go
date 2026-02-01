@@ -103,7 +103,7 @@ func TestCatchCommands(t *testing.T) {
 	escaped := 0
 	captured := 0
 
-	for range int(10) {
+	for range int(100) {
 		output := capturaOutput(commands, "catch", "https://pokeapi.co/api/v2/pokemon/pikachu")
 
 		if strings.Contains(output, "escaped") {
@@ -123,5 +123,21 @@ func TestCatchCommands(t *testing.T) {
 		t.Errorf("Pikachu nao consta na pokedex")
 	} else {
 		t.Logf("Pikachu consta na pokedex: %v", configs.pokedex["pikachu"].(map[string]any)["forms"].([]any)[0].(map[string]any)["name"].(string))
+	}
+}
+
+func TestInspectCommands(t *testing.T) {
+	resetData()
+	commands := getCommands()
+	output := capturaOutput(commands, "inspect", "pikachu")
+
+	if !strings.Contains(output, "Name: pikachu") {
+		t.Logf("Output: %s", output)
+		t.Errorf("Deveria  conter o nome do pokemon no output")
+	}
+
+	if !strings.Contains(output, "speed: 89") {
+		t.Logf("Output: %s", output)
+		t.Errorf("Deveria conter no output a velocidade do pokemon")
 	}
 }
