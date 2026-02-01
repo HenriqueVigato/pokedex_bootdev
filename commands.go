@@ -158,7 +158,7 @@ func printPokemons(locations []any) {
 func commandCatch(c *Config, pokemon string) error {
 	pokemonName := path.Base(pokemon)
 	var pokeDataJSON map[string]any
-	fmt.Printf("Throwing a Pokeboll at %s ... \n", pokemonName)
+	fmt.Printf("Throwing a Pokeball at %s... \n", pokemonName)
 	result, ok := c.cache.Get(pokemon)
 	if !ok {
 		pokeData, err := getData(pokemon)
