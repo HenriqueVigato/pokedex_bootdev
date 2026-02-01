@@ -24,12 +24,12 @@ type Pokemon struct {
 	} `json:"types"`
 }
 
-func ConvertToStruct(pokeData []byte) (Pokemon, error) {
+func ConvertToStruct(pokeData []byte) (*Pokemon, error) {
 	var pokemon Pokemon
 	if erro := json.Unmarshal(pokeData, &pokemon); erro != nil {
 		fmt.Println(erro)
-		return Pokemon{}, erro
+		return nil, fmt.Errorf("failed to Unmarshal pokemon data %w", erro)
 	}
 
-	return pokemon, nil
+	return &pokemon, nil
 }
