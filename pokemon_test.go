@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"os"
 	"testing"
 )
@@ -11,13 +10,12 @@ func TestStructConversion(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var pokemon Pokemon
-	err = json.Unmarshal(data, &pokemon)
-	if err != nil {
-		t.Fatal(err)
+	pokeStruct, erro := ConvertToStruct(data)
+	if erro != nil {
+		t.Errorf("%v", erro)
 	}
 
-	if pokemon.Forms[0].Name != "pikachu" {
+	if pokeStruct.Forms[0].Name != "pikachu" {
 		t.Errorf("Esperava o nome do pokemon no caso pikachu")
 	}
 }
