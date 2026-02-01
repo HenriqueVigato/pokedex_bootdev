@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"path"
 
@@ -155,7 +156,9 @@ func printPokemons(locations []any) {
 }
 
 func commandCatch(c *Config, pokemon string) error {
-	fmt.Printf("Throwing a Pokeboll at %s ... \n", path.Base(pokemon))
+	pokemonName := path.Base(pokemon)
+	var pokeDataJSON map[string]any
+	fmt.Printf("Throwing a Pokeboll at %s ... \n", pokemonName)
 	result, ok := c.cache.Get(pokemon)
 	if !ok {
 		pokeData, err := getData(pokemon)
@@ -163,12 +166,27 @@ func commandCatch(c *Config, pokemon string) error {
 			return fmt.Errorf("%v", err)
 		}
 		c.cache.Add(pokemon, pokeData)
+		pokeDataJSON = convertToJSON(pokeData)
 	} else {
-		jsonPokeData := convertToJSON(result)
+		pokeDataJSON = convertToJSON(result)
+	}
+	if tryCatchPokemon(pokemonName, int(pokeDataJSON["base_experience"].(float64))) {
+		c.pokedex[pokemonName] = pokeDataJSON
 	}
 	return nil
 }
 
-func tryCatchPokemon(baseExperience int) bool {
-	return true
+func tryCatchPokemon(pokemonName string, baseExperience int) bool {
+	probability := baseExperience % 11
+	roll := rand.Intn(10)
+	fmt.Println(probability)
+	fmt.Println(roll)
+
+	if probability == roll {
+		fmt.Printf("%s was caught!\n", pokemonName)
+		return true
+	} else {
+		fmt.Printf("%s escaped!\n", pokemonName)
+		return false
+	}
 }
