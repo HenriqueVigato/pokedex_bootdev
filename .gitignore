@@ -36,3 +36,5 @@ pokedex_bootdev
 
 # Arquivo de log
 *.log
+
+testsData/
