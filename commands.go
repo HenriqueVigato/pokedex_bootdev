@@ -179,8 +179,6 @@ func commandCatch(c *Config, pokemon string) error {
 func tryCatchPokemon(pokemonName string, baseExperience int) bool {
 	probability := baseExperience % 11
 	roll := rand.Intn(10)
-	fmt.Println(probability)
-	fmt.Println(roll)
 
 	if probability == roll {
 		fmt.Printf("%s was caught!\n", pokemonName)
