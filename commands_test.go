@@ -17,6 +17,7 @@ var (
 		Next:     "https://pokeapi.co/api/v2/location-area/",
 		Previous: "",
 		cache:    cache,
+		pokedex:  make(map[string]any),
 	}
 )
 
@@ -26,6 +27,7 @@ func resetData() {
 		Next:     "https://pokeapi.co/api/v2/location-area/",
 		Previous: "",
 		cache:    cache,
+		pokedex:  make(map[string]any),
 	}
 }
 
@@ -102,7 +104,7 @@ func TestCatchCommands(t *testing.T) {
 	captured := 0
 
 	for range int(10) {
-		output := capturaOutput(commands, "catch", "pikachu")
+		output := capturaOutput(commands, "catch", "https://pokeapi.co/api/v2/pokemon/pikachu")
 
 		if strings.Contains(output, "escaped") {
 			escaped++
@@ -116,5 +118,10 @@ func TestCatchCommands(t *testing.T) {
 	}
 	if escaped <= 0 {
 		t.Errorf("Deveria ter pelo menos um que conseguiu escapar")
+	}
+	if _, exist := configs.pokedex["pikachu"]; !exist {
+		t.Errorf("Pikachu nao consta na pokedex")
+	} else {
+		t.Logf("Pikachu consta na pokedex: %v", configs.pokedex["pikachu"].(map[string]any)["forms"].([]any)[0].(map[string]any)["name"].(string))
 	}
 }
