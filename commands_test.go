@@ -17,7 +17,7 @@ var (
 		Next:     "https://pokeapi.co/api/v2/location-area/",
 		Previous: "",
 		cache:    cache,
-		pokedex:  make(map[string]any),
+		pokedex:  make(map[string][]byte),
 	}
 )
 
@@ -27,7 +27,7 @@ func resetData() {
 		Next:     "https://pokeapi.co/api/v2/location-area/",
 		Previous: "",
 		cache:    cache,
-		pokedex:  make(map[string]any),
+		pokedex:  make(map[string][]byte),
 	}
 }
 
@@ -129,21 +129,27 @@ func TestCatchCommands(t *testing.T) {
 	if _, exist := configs.pokedex["pikachu"]; !exist {
 		t.Errorf("Pikachu nao consta na pokedex")
 	} else {
-		t.Logf("Pikachu consta na pokedex: %v", configs.pokedex["pikachu"].(map[string]any)["forms"].([]any)[0].(map[string]any)["name"].(string))
+		catched := convertToJSON(configs.pokedex["pikachu"])
+		t.Logf("Pikachu consta na pokedex: %v", catched["forms"].([]any)[0].(map[string]any)["name"].(string))
 	}
 }
 
 func TestInspectCommands(t *testing.T) {
-	resetData()
 	commands := getCommands()
 	output := capturaOutput(commands, "inspect", "pikachu")
+	wrongOutput := capturaOutput(commands, "inspect", "mew")
+
+	if !strings.Contains(wrongOutput, "tenha sido capturado") {
+		t.Logf("Resposta obtida: %s", wrongOutput)
+		t.Errorf("Deveria constar um mensagem para digitar nome de apenas pokemons capturados")
+	}
 
 	if !strings.Contains(output, "Name: pikachu") {
-		t.Logf("Output: %s", output)
+		t.Logf("Output: \n%s", output)
 		t.Errorf("Deveria  conter o nome do pokemon no output")
 	}
 
-	if !strings.Contains(output, "speed: 89") {
+	if !strings.Contains(output, "speed: 90") {
 		t.Logf("Output: %s", output)
 		t.Errorf("Deveria conter no output a velocidade do pokemon")
 	}
