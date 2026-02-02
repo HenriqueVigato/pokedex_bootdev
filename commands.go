@@ -60,6 +60,11 @@ func getCommands() map[string]cliCommand {
 			description: "Gives detailed information of pokemon",
 			callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "List all the captured pokemon",
+			callback:    commandPokedex,
+		},
 	}
 	return commands
 }
@@ -181,21 +186,23 @@ func commandCatch(c *Config, pokemon string) error {
 		pokeDataJSON = convertToJSON(result)
 		pokeByte = result
 	}
-	if tryCatchPokemon(pokemonName, int(pokeDataJSON["base_experience"].(float64))) {
+	if tryCatchPokemon(int(pokeDataJSON["base_experience"].(float64))) {
 		c.pokedex[pokemonName] = pokeByte
+		fmt.Printf("%s was caught!\n", pokemonName)
+		fmt.Println("You may now inspect it with the inspect command.")
+	} else {
+		fmt.Printf("%s escaped!\n", pokemonName)
 	}
 	return nil
 }
 
-func tryCatchPokemon(pokemonName string, baseExperience int) bool {
+func tryCatchPokemon(baseExperience int) bool {
 	probability := baseExperience % 11
 	roll := rand.Intn(10)
 
 	if probability == roll {
-		fmt.Printf("%s was caught!\n", pokemonName)
 		return true
 	} else {
-		fmt.Printf("%s escaped!\n", pokemonName)
 		return false
 	}
 }
@@ -236,4 +243,16 @@ func printPokemonStats(p *Pokemon) string {
 	}
 
 	return sb.String()
+}
+
+func commandPokedex(c *Config, n string) error {
+	if len(c.pokedex) <= 0 {
+		fmt.Println("Voce nao capturou nenhum pokemon ainda")
+	} else {
+		fmt.Println("Your Pokedex:")
+		for key := range c.pokedex {
+			fmt.Printf(" - %s\n", key)
+		}
+	}
+	return nil
 }
