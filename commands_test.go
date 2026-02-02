@@ -160,7 +160,7 @@ func TestPokedexCommands(t *testing.T) {
 	output := capturaOutput(commands, "pokedex", "")
 
 	if !strings.Contains(output, "pikachu") {
-		t.Logf("Output: \n%s", output)
+		t.Logf("Output: %s", output)
 		t.Errorf("Deveria listar os pokemons capturados")
 	}
 
