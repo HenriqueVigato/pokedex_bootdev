@@ -49,7 +49,7 @@ func main() {
 
 		cmd := commands[userCommand[0]]
 		switch cmd.name {
-		case "help", "exit", "map", "mapb":
+		case "help", "exit", "map", "mapb", "pokedex":
 			err := cmd.callback(configs, "")
 			if err != nil {
 				fmt.Println("Erro:", err)
