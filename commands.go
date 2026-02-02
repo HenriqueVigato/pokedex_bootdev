@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"path"
+	"strings"
 
 	pokecache "github.com/HenriqueVigato/pokedex_bootdev/internal"
 )
@@ -19,7 +20,7 @@ type Config struct {
 	Next     string
 	Previous string
 	cache    *pokecache.Cache
-	pokedex  map[string]any
+	pokedex  map[string][]byte
 }
 
 func getCommands() map[string]cliCommand {
@@ -53,6 +54,11 @@ func getCommands() map[string]cliCommand {
 			name:        "catch",
 			description: "Try capture a pokemon",
 			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "Gives detailed information of pokemon",
+			callback:    commandInspect,
 		},
 	}
 	return commands
@@ -158,20 +164,25 @@ func printPokemons(locations []any) {
 func commandCatch(c *Config, pokemon string) error {
 	pokemonName := path.Base(pokemon)
 	var pokeDataJSON map[string]any
+	var pokeByte []byte
+
 	fmt.Printf("Throwing a Pokeball at %s... \n", pokemonName)
 	result, ok := c.cache.Get(pokemon)
+
 	if !ok {
 		pokeData, err := getData(pokemon)
 		if err != nil {
 			return fmt.Errorf("%v", err)
 		}
 		c.cache.Add(pokemon, pokeData)
+		pokeByte = pokeData
 		pokeDataJSON = convertToJSON(pokeData)
 	} else {
 		pokeDataJSON = convertToJSON(result)
+		pokeByte = result
 	}
 	if tryCatchPokemon(pokemonName, int(pokeDataJSON["base_experience"].(float64))) {
-		c.pokedex[pokemonName] = pokeDataJSON
+		c.pokedex[pokemonName] = pokeByte
 	}
 	return nil
 }
@@ -187,4 +198,42 @@ func tryCatchPokemon(pokemonName string, baseExperience int) bool {
 		fmt.Printf("%s escaped!\n", pokemonName)
 		return false
 	}
+}
+
+func commandInspect(c *Config, pokemon string) error {
+	pokemonData, ok := c.pokedex[pokemon]
+	if !ok {
+		fmt.Println("favor informe um pokemon que ja tenha sido capturado")
+		return fmt.Errorf("Pokemon not found")
+	}
+	pokeStruck, err := ConvertToStruct(pokemonData)
+	if err != nil {
+		return fmt.Errorf("erro: %v", err)
+	}
+	fmt.Println(printPokemonStats(pokeStruck))
+
+	return nil
+}
+
+func printPokemonStats(p *Pokemon) string {
+	var sb strings.Builder
+
+	fmt.Fprintf(&sb, "Name: %s\n", p.Forms[0].Name)
+	fmt.Fprintf(&sb, "Height: %d\n", p.Heigth)
+	fmt.Fprintf(&sb, "Weight: %d\n", p.Weight)
+
+	sb.WriteString("Stats: \n")
+
+	for _, stat := range p.Stats {
+		fmt.Fprintf(&sb, "  -%s: ", stat.Stat.Name)
+		fmt.Fprintf(&sb, "%d\n", stat.BaseStat)
+	}
+
+	sb.WriteString("Types:\n")
+
+	for _, tipe := range p.Types {
+		fmt.Fprintf(&sb, "  - %s", tipe.Type.Name)
+	}
+
+	return sb.String()
 }
