@@ -154,3 +154,22 @@ func TestInspectCommands(t *testing.T) {
 		t.Errorf("Deveria conter no output a velocidade do pokemon")
 	}
 }
+
+func TestPokedexCommands(t *testing.T) {
+	commands := getCommands()
+	output := capturaOutput(commands, "pokedex", "")
+
+	if !strings.Contains(output, "pikachu") {
+		t.Logf("Output: \n%s", output)
+		t.Errorf("Deveria listar os pokemons capturados")
+	}
+
+	resetData()
+
+	cleanOutput := capturaOutput(commands, "pokedex", "")
+
+	if !strings.Contains(cleanOutput, "nao capturou nenhum pokemon ainda") {
+		t.Logf("Output: \n %s", cleanOutput)
+		t.Errorf("Deveria exibir uma mensagem de erro que nao tem nenhum pokemon na pokedex")
+	}
+}
