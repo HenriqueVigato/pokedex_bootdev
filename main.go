@@ -19,7 +19,7 @@ func main() {
 		Next:     apiPokemonArea,
 		Previous: "",
 		cache:    cache,
-		pokedex:  make(map[string]any),
+		pokedex:  make(map[string][]byte),
 	}
 
 	fmt.Println("Welcome to the Pokedex!")
@@ -70,6 +70,15 @@ func main() {
 				erro := cmd.callback(configs, apiPokemons+userCommand[1])
 				if erro != nil {
 					fmt.Println("Erro:", erro)
+				}
+			}
+		case "inspect":
+			if len(userCommand) < 2 {
+				fmt.Println("Favor informe um nome de pokemon a ser especionado")
+			} else {
+				erro := cmd.callback(configs, userCommand[1])
+				if erro != nil {
+					fmt.Println("Erro: ", erro)
 				}
 			}
 		default:
